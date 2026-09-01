@@ -1,12 +1,18 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getStripeClient, isBillingConfigured } from "@/lib/billing";
+import { getStripeClient, isPlanConfigured, priceIdForPlan } from "@/lib/billing";
 
 export async function POST(request: Request) {
-  if (!isBillingConfigured()) {
+  const { householdId, plan } = await request.json().catch(() => ({}));
+
+  if (plan !== "plus" && plan !== "family") {
+    return NextResponse.json({ error: "Invalid plan." }, { status: 400 });
+  }
+
+  if (!isPlanConfigured(plan)) {
     return NextResponse.json(
-      { error: "Billing isn't set up yet. Check back soon." },
+      { error: "This plan isn't set up yet. Check back soon." },
       { status: 503 }
     );
   }
@@ -19,7 +25,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
   }
 
-  const { householdId } = await request.json().catch(() => ({}));
   if (!householdId) {
     return NextResponse.json({ error: "Missing householdId." }, { status: 400 });
   }
@@ -70,7 +75,7 @@ export async function POST(request: Request) {
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
-    line_items: [{ price: process.env.STRIPE_PRICE_ID!, quantity: 1 }],
+    line_items: [{ price: priceIdForPlan(plan)!, quantity: 1 }],
     success_url: `${origin}/settings?billing=success`,
     cancel_url: `${origin}/settings?billing=canceled`,
     client_reference_id: householdId,
@@ -79,8 +84,6 @@ export async function POST(request: Request) {
     },
   });
 
-  // Record the pending customer id now so the webhook can find this
-  // household even if it fires before the row otherwise exists.
   await admin.from("subscriptions").upsert(
     {
       household_id: householdId,

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getStripeClient, isBillingConfigured } from "@/lib/billing";
+import { getStripeClient, isBillingConfigured, planForPriceId } from "@/lib/billing";
 import type Stripe from "stripe";
 
 export async function POST(request: Request) {
@@ -27,7 +27,8 @@ export async function POST(request: Request) {
 
   async function upsertFromSubscription(subscription: Stripe.Subscription, householdId: string) {
     const status = subscription.status; // active | trialing | past_due | canceled | incomplete | ...
-    const plan = status === "active" || status === "trialing" ? "premium" : "free";
+    const priceId = subscription.items.data[0]?.price?.id;
+    const plan = status === "active" || status === "trialing" ? planForPriceId(priceId) : "free";
     const periodEnd = subscription.items.data[0]?.current_period_end;
 
     await admin.from("subscriptions").upsert(
@@ -36,6 +37,7 @@ export async function POST(request: Request) {
         stripe_customer_id:
           typeof subscription.customer === "string" ? subscription.customer : subscription.customer.id,
         stripe_subscription_id: subscription.id,
+        stripe_price_id: priceId ?? null,
         status,
         plan,
         current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,

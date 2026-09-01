@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Banner, Button, Card, Field, Input } from "@/components/ui";
 import type { NotificationPreferences, Profile } from "@/lib/types";
+import { PLANS } from "@/lib/plans";
 import type { HouseholdSubscription } from "@/lib/billing";
 
 export function SettingsForm({
@@ -42,21 +43,22 @@ function BillingSection({
 }) {
   const searchParams = useSearchParams();
   const billingResult = searchParams.get("billing");
-  const [loading, setLoading] = useState(false);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const isPremium = subscription?.plan === "premium";
+  const currentPlan = subscription?.plan ?? "free";
+  const isPaid = currentPlan !== "free";
 
-  async function upgrade() {
-    setLoading(true);
+  async function choosePlan(plan: "plus" | "family") {
+    setLoadingPlan(plan);
     setError(null);
     const res = await fetch("/api/billing/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ householdId }),
+      body: JSON.stringify({ householdId, plan }),
     });
     const data = await res.json().catch(() => ({}));
-    setLoading(false);
+    setLoadingPlan(null);
     if (!res.ok) {
       setError(data.error ?? "Couldn't start checkout.");
       return;
@@ -65,7 +67,7 @@ function BillingSection({
   }
 
   async function manageBilling() {
-    setLoading(true);
+    setLoadingPlan("manage");
     setError(null);
     const res = await fetch("/api/billing/portal", {
       method: "POST",
@@ -73,7 +75,7 @@ function BillingSection({
       body: JSON.stringify({ householdId }),
     });
     const data = await res.json().catch(() => ({}));
-    setLoading(false);
+    setLoadingPlan(null);
     if (!res.ok) {
       setError(data.error ?? "Couldn't open billing portal.");
       return;
@@ -87,7 +89,7 @@ function BillingSection({
 
       {billingResult === "success" && (
         <div className="mt-3">
-          <Banner variant="success">You're on Premium. Thanks for supporting ElderCheck!</Banner>
+          <Banner variant="success">Your plan is updated. Thanks for supporting ElderCheck!</Banner>
         </div>
       )}
       {billingResult === "canceled" && (
@@ -101,30 +103,60 @@ function BillingSection({
         </div>
       )}
 
-      <div className="mt-4 flex items-center justify-between">
-        <div>
-          <p className="text-[14px] font-medium text-ink">
-            {isPremium ? "Premium plan" : "Free plan"}
-          </p>
-          <p className="mt-1 text-[13px] text-ink-soft">
-            {isPremium
-              ? "Unlimited loved ones and full history."
-              : "1 loved one, unlimited caregivers, in-app alerts."}
-          </p>
-        </div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        {PLANS.map((plan) => {
+          const isCurrent = plan.id === currentPlan;
+          return (
+            <div
+              key={plan.id}
+              className={`rounded-2xl border p-4 ${
+                isCurrent ? "border-moss bg-moss-light" : "border-line"
+              }`}
+            >
+              <p className="text-[13px] font-medium uppercase tracking-[0.08em] text-ink-soft">
+                {plan.name}
+              </p>
+              <p className="mt-1 text-[22px] font-display text-ink">
+                {plan.price}
+                <span className="text-[13px] font-sans text-ink-soft"> {plan.priceDetail}</span>
+              </p>
+              <ul className="mt-3 space-y-1.5">
+                {plan.features.map((f) => (
+                  <li key={f} className="text-[13px] text-ink-soft">
+                    · {f}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-4">
+                {isCurrent ? (
+                  <span className="text-[13px] font-medium text-moss-dark">Current plan</span>
+                ) : plan.id === "free" ? (
+                  <span className="text-[13px] text-ink-soft">
+                    {isPaid ? "Downgrade via Manage billing" : ""}
+                  </span>
+                ) : (
+                  <Button
+                    variant="secondary"
+                    className="w-full px-3 py-2 min-h-0 text-[13px]"
+                    onClick={() => choosePlan(plan.id as "plus" | "family")}
+                    disabled={loadingPlan !== null}
+                  >
+                    {loadingPlan === plan.id ? "Loading…" : `Choose ${plan.name}`}
+                  </Button>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      <div className="mt-4">
-        {isPremium ? (
-          <Button variant="secondary" onClick={manageBilling} disabled={loading}>
-            {loading ? "Loading…" : "Manage billing"}
+      {isPaid && (
+        <div className="mt-4">
+          <Button variant="secondary" onClick={manageBilling} disabled={loadingPlan !== null}>
+            {loadingPlan === "manage" ? "Loading…" : "Manage billing"}
           </Button>
-        ) : (
-          <Button onClick={upgrade} disabled={loading}>
-            {loading ? "Loading…" : "Upgrade to Premium"}
-          </Button>
-        )}
-      </div>
+        </div>
+      )}
     </Card>
   );
 }
