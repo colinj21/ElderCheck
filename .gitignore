@@ -1,0 +1,20 @@
+# dependencies
+node_modules/
+
+# next.js build output
+.next/
+out/
+
+# env files -- real secrets live in Vercel's environment variables, never in git
+.env
+.env.local
+.env.production
+.env*.local
+
+# native / capacitor build artifacts (not part of the web app)
+ios/
+
+# misc
+.DS_Store
+*.tsbuildinfo
+npm-debug.log*

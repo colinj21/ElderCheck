@@ -1,0 +1,24 @@
+{
+  "name": "ElderCheck — Peace of mind, every day",
+  "short_name": "ElderCheck",
+  "description": "A gentle daily check-in that keeps your family close, and keeps your loved one independent.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#f7f3ea",
+  "theme_color": "#4f6b52",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

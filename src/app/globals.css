@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+/*
+  ElderCheck design tokens.
+  Warm, unhurried, and calm rather than clinical -- this is a product
+  families use every day, often while tired. Moss (not terracotta) is
+  the trust/primary accent; amber and brick mark attention/urgent
+  states without shouting.
+*/
+:root {
+  --color-espresso: #16140f;
+  --color-paper: #f7f3ea;
+  --color-paper-dim: #efe9db;
+  --color-ink: #232016;
+  --color-ink-soft: #55503f;
+  --color-moss: #4f6b52;
+  --color-moss-dark: #3a4f3d;
+  --color-moss-light: #dfe8de;
+  --color-amber: #c98a2c;
+  --color-amber-light: #f6e6c8;
+  --color-brick: #a8462f;
+  --color-brick-light: #f3ddd6;
+  --color-line: #e2dac8;
+}
+
+@theme inline {
+  --color-espresso: var(--color-espresso);
+  --color-paper: var(--color-paper);
+  --color-paper-dim: var(--color-paper-dim);
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-moss: var(--color-moss);
+  --color-moss-dark: var(--color-moss-dark);
+  --color-moss-light: var(--color-moss-light);
+  --color-amber: var(--color-amber);
+  --color-amber-light: var(--color-amber-light);
+  --color-brick: var(--color-brick);
+  --color-brick-light: var(--color-brick-light);
+  --color-line: var(--color-line);
+  --font-display: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-moss-dark);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
