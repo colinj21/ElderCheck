@@ -83,6 +83,11 @@ export async function POST(request: Request) {
       subscription_data: {
         metadata: { household_id: householdId },
       },
+      // Managed Payments is on by default for new Stripe accounts and
+      // requires every product to have a tax code assigned. We're not
+      // using Stripe Tax yet, so disable it here rather than forcing
+      // tax-code classification on the Plus/Family products.
+      managed_payments: { enabled: false },
     });
 
     await admin.from("subscriptions").upsert(
