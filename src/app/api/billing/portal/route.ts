@@ -54,10 +54,19 @@ export async function POST(request: Request) {
   const stripe = getStripeClient()!;
   const origin = new URL(request.url).origin;
 
-  const portalSession = await stripe.billingPortal.sessions.create({
-    customer: sub.stripe_customer_id,
-    return_url: `${origin}/settings`,
-  });
+  try {
+    const portalSession = await stripe.billingPortal.sessions.create({
+      customer: sub.stripe_customer_id,
+      return_url: `${origin}/settings`,
+    });
 
-  return NextResponse.json({ url: portalSession.url });
+    return NextResponse.json({ url: portalSession.url });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error.";
+    console.error("Stripe portal error:", message);
+    return NextResponse.json(
+      { error: `Couldn't open billing portal: ${message}` },
+      { status: 500 }
+    );
+  }
 }
