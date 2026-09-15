@@ -148,3 +148,46 @@ export interface NotificationPreferences {
   email_on_concern: boolean;
   email_on_missed_checkin: boolean;
 }
+
+export interface Medication {
+  id: string;
+  household_id: string;
+  care_recipient_id: string;
+  name: string;
+  dosage: string | null;
+  frequency: string | null;
+  instructions: string | null;
+  prescribing_doctor: string | null;
+  active: boolean;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MedicationLog {
+  id: string;
+  medication_id: string;
+  household_id: string;
+  care_recipient_id: string;
+  taken_by: string | null;
+  taken_at: string;
+  log_date: string;
+  notes: string | null;
+}
+
+export type AppointmentStatus = "upcoming" | "completed" | "canceled";
+
+export interface Appointment {
+  id: string;
+  household_id: string;
+  care_recipient_id: string;
+  title: string;
+  doctor_name: string | null;
+  location: string | null;
+  appointment_at: string;
+  notes: string | null;
+  status: AppointmentStatus;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}

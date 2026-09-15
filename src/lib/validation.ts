@@ -95,4 +95,27 @@ export const profileUpdateSchema = z.object({
 });
 
 export const ALLOWED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
-export const MAX_PHOTO_BYTES = 5 * 1024 * 1024; // 5MB
+export const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+
+export const medicationSchema = z.object({
+  careRecipientId: z.string().uuid(),
+  name: z.string().trim().min(1, "Enter the medication name").max(160),
+  dosage: z.string().trim().max(80).optional().or(z.literal("")),
+  frequency: z.string().trim().max(120).optional().or(z.literal("")),
+  instructions: z.string().trim().max(500).optional().or(z.literal("")),
+  prescribingDoctor: z.string().trim().max(160).optional().or(z.literal("")),
+});
+
+export const medicationLogSchema = z.object({
+  medicationId: z.string().uuid(),
+  notes: z.string().trim().max(300).optional().or(z.literal("")),
+});
+
+export const appointmentSchema = z.object({
+  careRecipientId: z.string().uuid(),
+  title: z.string().trim().min(1, "Enter what this appointment is for").max(160),
+  doctorName: z.string().trim().max(160).optional().or(z.literal("")),
+  location: z.string().trim().max(200).optional().or(z.literal("")),
+  appointmentAt: z.string().trim().min(1, "Choose a date and time"),
+  notes: z.string().trim().max(500).optional().or(z.literal("")),
+}); // 5MB

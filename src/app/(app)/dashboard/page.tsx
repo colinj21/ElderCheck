@@ -128,12 +128,24 @@ async function FamilyDashboard({ householdId }: { householdId: string }) {
                   {unresolved.length} unresolved {unresolved.length === 1 ? "concern" : "concerns"}
                 </p>
               )}
-              <div className="mt-4 flex gap-4">
+              <div className="mt-4 flex flex-wrap gap-4">
                 <Link
                   href={`/history?recipient=${recipient.id}`}
                   className="text-[13px] font-medium text-moss-dark underline underline-offset-2"
                 >
                   View history
+                </Link>
+                <Link
+                  href={`/recipient/${recipient.id}/medications`}
+                  className="text-[13px] font-medium text-moss-dark underline underline-offset-2"
+                >
+                  Medications
+                </Link>
+                <Link
+                  href={`/recipient/${recipient.id}/appointments`}
+                  className="text-[13px] font-medium text-moss-dark underline underline-offset-2"
+                >
+                  Appointments
                 </Link>
                 <Link
                   href={`/recipient/${recipient.id}`}
@@ -355,12 +367,18 @@ async function CaregiverDashboard({ caregiverRecipientIds }: { caregiverRecipien
               <p className="mt-1 text-[13px] text-ink-soft">
                 {done ? "Today's check-in is complete." : "Today's check-in is still open."}
               </p>
-              <div className="mt-4">
+              <div className="mt-4 flex flex-wrap gap-3">
                 {done ? (
                   <span className="text-[13px] font-medium text-moss-dark">Submitted ✓</span>
                 ) : (
                   <LinkButton href={`/caregiver/checkin/${recipient.id}`}>Start check-in</LinkButton>
                 )}
+                <Link
+                  href={`/recipient/${recipient.id}/medications`}
+                  className="inline-flex items-center text-[13px] font-medium text-moss-dark underline underline-offset-2"
+                >
+                  Medications
+                </Link>
               </div>
             </Card>
           );

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUserContext } from "@/lib/session";
@@ -40,6 +41,20 @@ export default async function RecipientProfilePage({
           Helpful details for anyone caring for them. Only fill in what's useful &mdash; nothing
           here is required.
         </p>
+        <div className="mt-3 flex gap-4">
+          <Link
+            href={`/recipient/${id}/medications`}
+            className="text-[13px] font-medium text-moss-dark underline underline-offset-2"
+          >
+            Medications
+          </Link>
+          <Link
+            href={`/recipient/${id}/appointments`}
+            className="text-[13px] font-medium text-moss-dark underline underline-offset-2"
+          >
+            Appointments
+          </Link>
+        </div>
       </div>
       <RecipientProfileForm recipient={recipient} />
     </div>
