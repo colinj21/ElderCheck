@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Banner, Button, Card, Field, Input } from "@/components/ui";
 
 export function InviteForm({
@@ -14,6 +15,7 @@ export function InviteForm({
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [careRecipientId, setCareRecipientId] = useState(recipients[0]?.id ?? "");
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
@@ -52,6 +54,9 @@ export function InviteForm({
     setInviteUrl(data.inviteUrl);
     setEmail("");
     setFullName("");
+    // Re-fetch server data so the new invitation shows up in
+    // "Pending & past invitations" without a manual page reload.
+    router.refresh();
   }
 
   async function copyLink() {

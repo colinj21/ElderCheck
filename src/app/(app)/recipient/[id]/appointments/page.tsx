@@ -4,6 +4,7 @@ import { requireUserContext } from "@/lib/session";
 import { Card, EmptyState } from "@/components/ui";
 import { AddAppointmentForm } from "./add-appointment-form";
 import { AppointmentActions } from "./appointment-actions";
+import { LocalTime } from "@/components/local-time";
 import type { Appointment } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -80,7 +81,7 @@ export default async function AppointmentsPage({
                   <div>
                     <p className="text-[15px] font-medium text-ink">{appt.title}</p>
                     <p className="mt-0.5 text-[13px] text-ink-soft">
-                      {formatDateTime(appt.appointment_at)}
+                      <LocalTime iso={appt.appointment_at} format="datetimeWithWeekday" />
                     </p>
                     {(appt.doctor_name || appt.location) && (
                       <p className="mt-1 text-[13px] text-ink-soft">
@@ -109,7 +110,7 @@ export default async function AppointmentsPage({
                   <div>
                     <p className="text-[15px] font-medium text-ink">{appt.title}</p>
                     <p className="mt-0.5 text-[13px] text-ink-soft">
-                      {formatDateTime(appt.appointment_at)} ·{" "}
+                      <LocalTime iso={appt.appointment_at} format="datetimeWithWeekday" /> ·{" "}
                       {appt.status === "canceled" ? "Canceled" : "Completed"}
                     </p>
                   </div>
@@ -123,12 +124,3 @@ export default async function AppointmentsPage({
   );
 }
 
-function formatDateTime(iso: string) {
-  return new Date(iso).toLocaleString(undefined, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}

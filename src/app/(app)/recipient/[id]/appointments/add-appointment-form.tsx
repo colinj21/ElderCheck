@@ -14,7 +14,10 @@ export function AddAppointmentForm({ careRecipientId }: { careRecipientId: strin
     setError(null);
     const date = formData.get("date") as string;
     const time = formData.get("time") as string;
-    const appointmentAt = date && time ? `${date}T${time}` : "";
+    // Store the real instant: `${date}T${time}` alone is a wall-clock string
+    // Postgres would interpret as UTC, shifting every appointment by the
+    // family's UTC offset. new Date(...) uses the browser's timezone.
+    const appointmentAt = date && time ? new Date(`${date}T${time}`).toISOString() : "";
 
     startTransition(async () => {
       const res = await fetch("/api/appointments", {

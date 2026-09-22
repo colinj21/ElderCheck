@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUserContext } from "@/lib/session";
 import { Card, EmptyState, StatusBadge } from "@/components/ui";
+import { LocalTime } from "@/components/local-time";
 
 export const dynamic = "force-dynamic";
 
@@ -157,12 +158,7 @@ export default async function HistoryPage({
                   {item.body && <p className="mt-1.5 text-[14px] text-ink-soft">{item.body}</p>}
                   <p className="mt-2 text-[12px] text-ink-soft">
                     {item.resolutionNote && <span className="mr-2">{item.resolutionNote} ·</span>}
-                    {new Date(item.timestamp).toLocaleString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "2-digit",
-                    })}
+                    <LocalTime iso={item.timestamp} format="datetime" />
                   </p>
                 </div>
                 {item.status && <StatusBadge status={item.status} />}

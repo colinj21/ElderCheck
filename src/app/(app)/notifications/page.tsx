@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUserContext } from "@/lib/session";
 import { Card, EmptyState } from "@/components/ui";
 import { MarkAllReadButton } from "./mark-all-read-button";
+import { LocalTime } from "@/components/local-time";
 import type { AppNotification } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -48,12 +49,7 @@ export default async function NotificationsPage() {
                   <p className="text-[14px] text-ink">{n.title}</p>
                   {n.body && <p className="mt-1 text-[13px] text-ink-soft">{n.body}</p>}
                   <p className="mt-1 text-[12px] text-ink-soft">
-                    {new Date(n.created_at).toLocaleString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "2-digit",
-                    })}
+                    <LocalTime iso={n.created_at} format="datetime" />
                   </p>
                 </div>
               </div>

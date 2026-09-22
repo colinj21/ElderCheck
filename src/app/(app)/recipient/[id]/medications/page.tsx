@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUserContext } from "@/lib/session";
 import { Card, EmptyState } from "@/components/ui";
 import { MedicationLogButton } from "./medication-log-button";
+import { LocalTime } from "@/components/local-time";
 import { AddMedicationForm } from "./add-medication-form";
 import type { Medication, MedicationLog } from "@/lib/types";
 
@@ -94,7 +95,7 @@ export default async function MedicationsPage({
                       <ul className="mt-2 space-y-0.5">
                         {logsToday.map((log) => (
                           <li key={log.id} className="text-[12px] text-moss-dark">
-                            ✓ Given {formatTime(log.taken_at)} by{" "}
+                            ✓ Given <LocalTime iso={log.taken_at} format="time" /> by{" "}
                             {log.profiles?.full_name ?? "someone"}
                           </li>
                         ))}
@@ -115,8 +116,4 @@ export default async function MedicationsPage({
       {isAdmin && <AddMedicationForm careRecipientId={careRecipientId} />}
     </div>
   );
-}
-
-function formatTime(iso: string) {
-  return new Date(iso).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
 }
