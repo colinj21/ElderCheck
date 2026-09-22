@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { signupSchema } from "@/lib/validation";
 import { Banner, Button, Field, Input } from "@/components/ui";
+import { PasswordInput } from "@/components/password-input";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -93,8 +94,7 @@ export default function SignupPage() {
           />
         </Field>
         <Field label="Password" hint="At least 8 characters.">
-          <Input
-            type="password"
+          <PasswordInput
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="new-password"
@@ -105,6 +105,13 @@ export default function SignupPage() {
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? "Creating account…" : "Create account"}
         </Button>
+        <p className="text-[13px] leading-relaxed text-ink-soft">
+          By creating an account, you agree to our{" "}
+          <Link href="/legal" className="underline underline-offset-2">
+            privacy &amp; terms
+          </Link>
+          .
+        </p>
       </form>
 
       <p className="mt-6 text-center text-[14px] text-ink-soft">

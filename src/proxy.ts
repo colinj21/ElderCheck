@@ -10,6 +10,11 @@ const PUBLIC_PATHS = [
   "/auth/callback",
   "/invitations/accept",
   "/legal",
+  // Public infrastructure files -- without these, logged-out crawlers and
+  // the installed PWA get redirected to /login instead of the real file.
+  "/robots.txt",
+  "/sitemap.xml",
+  "/manifest.json",
 ];
 
 function isPublicPath(pathname: string) {

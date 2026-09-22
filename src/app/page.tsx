@@ -48,7 +48,7 @@ export default function LandingPage() {
             <Feature
               eyebrow="One shared view"
               title="A history you can trust"
-              body="Every visit, note, and check-in lands in one timeline the whole family can see — no more piecing things together over text."
+              body="Every visit, note, and check-in lands in one timeline, shared with the family members you choose — no more piecing things together over text."
             />
             <Feature
               eyebrow="When it matters"
@@ -89,7 +89,7 @@ function Feature({ eyebrow, title, body }: { eyebrow: string; title: string; bod
       <p className="text-[12px] font-medium uppercase tracking-[0.15em] text-moss-dark">
         {eyebrow}
       </p>
-      <h3 className="mt-2 font-display text-lg text-ink">{title}</h3>
+      <h2 className="mt-2 font-display text-lg text-ink">{title}</h2>
       <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">{body}</p>
     </div>
   );

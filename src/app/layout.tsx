@@ -29,7 +29,8 @@ export const viewport: Viewport = {
   themeColor: "#4f6b52",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  // No maximumScale: locking zoom fails WCAG 1.4.4 and makes the app
+  // unusable for low-vision users -- a core audience for this product.
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -58,7 +58,7 @@ export function Field({
       <span className="mb-1.5 block text-[14px] font-medium text-ink">{label}</span>
       {children}
       {hint && !error && <span className="mt-1 block text-[13px] text-ink-soft">{hint}</span>}
-      {error && <span className="mt-1 block text-[13px] text-brick">{error}</span>}
+      {error && <span role="alert" className="mt-1 block text-[13px] text-brick">{error}</span>}
     </label>
   );
 }
@@ -134,5 +134,9 @@ export function Banner({ variant = "info", children }: { variant?: "info" | "err
     error: "bg-brick-light text-brick",
     success: "bg-moss-light text-moss-dark",
   };
-  return <div className={`rounded-xl px-4 py-3 text-[14px] ${styles[variant]}`}>{children}</div>;
+  return (
+    <div role={variant === "error" ? "alert" : undefined} className={`rounded-xl px-4 py-3 text-[14px] ${styles[variant]}`}>
+      {children}
+    </div>
+  );
 }
