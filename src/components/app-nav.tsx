@@ -34,16 +34,16 @@ export function AppNav({
 
   return (
     <header className="border-b border-line bg-paper/95 backdrop-blur">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-3 gap-y-1 px-4 py-3 sm:px-6 sm:py-4">
         <Link href="/dashboard" className="font-display text-lg tracking-tight text-ink">
           ElderCheck
         </Link>
-        <nav className="flex items-center gap-1">
+        <nav className="flex flex-wrap items-center gap-1">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`rounded-full px-3.5 py-2 text-[14px] font-medium transition-colors ${
+              className={`rounded-full px-3 py-2 text-[13px] font-medium transition-colors sm:px-3.5 sm:text-[14px] ${
                 pathname === link.href
                   ? "bg-moss-light text-moss-dark"
                   : "text-ink-soft hover:text-ink"
@@ -55,7 +55,7 @@ export function AppNav({
           <Link
             href="/notifications"
             aria-label="Notifications"
-            className={`relative rounded-full px-3.5 py-2 text-[14px] font-medium transition-colors ${
+            className={`relative rounded-full px-3 py-2 text-[13px] font-medium transition-colors sm:px-3.5 sm:text-[14px] ${
               pathname === "/notifications"
                 ? "bg-moss-light text-moss-dark"
                 : "text-ink-soft hover:text-ink"
@@ -70,7 +70,7 @@ export function AppNav({
           </Link>
           <button
             onClick={logout}
-            className="ml-2 rounded-full px-3.5 py-2 text-[14px] font-medium text-ink-soft hover:text-ink"
+            className="rounded-full px-3 py-2 text-[13px] font-medium text-ink-soft hover:text-ink sm:ml-2 sm:px-3.5 sm:text-[14px]"
           >
             Log out
           </button>
