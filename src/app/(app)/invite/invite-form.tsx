@@ -19,6 +19,7 @@ export function InviteForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
+  const [emailSent, setEmailSent] = useState(false);
   const [copied, setCopied] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
@@ -52,6 +53,7 @@ export function InviteForm({
     }
 
     setInviteUrl(data.inviteUrl);
+    setEmailSent(Boolean(data.emailSent));
     setEmail("");
     setFullName("");
     // Re-fetch server data so the new invitation shows up in
@@ -111,7 +113,9 @@ export function InviteForm({
         {inviteUrl && (
           <div className="rounded-xl bg-moss-light p-4">
             <p className="text-[13px] font-medium text-moss-dark">
-              No email provider is connected yet, so share this link directly:
+              {emailSent
+                ? "Invitation emailed. You can also share the link directly:"
+                : "We couldn't email this invitation, so share this link directly:"}
             </p>
             <div className="mt-2 flex items-center gap-2">
               <code className="flex-1 truncate rounded-lg bg-white px-3 py-2 text-[12px] text-ink">

@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkinSubmitSchema } from "@/lib/validation";
-import { notify, getHouseholdMemberIds } from "@/lib/notify";
+import { notify, getHouseholdMemberIds, getEmailsForProfileIds } from "@/lib/notify";
+import { sendEmail, concernAlertEmail } from "@/lib/email";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -125,6 +126,23 @@ export async function POST(request: Request) {
       relatedTable: "checkins",
       relatedId: checkin.id,
     });
+
+    const memberEmails = await getEmailsForProfileIds(memberIds);
+    if (memberEmails.length > 0) {
+      const dashboardUrl = new URL("/dashboard", request.url).toString();
+      const { subject, html, text } = concernAlertEmail({
+        caregiverName,
+        recipientName,
+        severity: status === "urgent" ? "urgent" : "attention",
+        summary:
+          notes?.trim() ||
+          (status === "urgent"
+            ? "Caregiver flagged today's check-in as urgent."
+            : "Caregiver flagged today's check-in as needing attention."),
+        dashboardUrl,
+      });
+      await Promise.all(memberEmails.map((to) => sendEmail({ to, subject, html, text })));
+    }
   } else {
     await notify({
       profileIds: memberIds,

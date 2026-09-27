@@ -51,3 +51,26 @@ export async function getHouseholdMemberIds(householdId: string): Promise<string
     .eq("household_id", householdId);
   return (data ?? []).map((r) => r.profile_id as string);
 }
+
+/**
+ * Looks up sign-in email addresses for a set of profile ids. Emails
+ * aren't stored on the profiles table -- they live in Supabase Auth --
+ * so this calls the admin auth API per id. Best-effort: a lookup
+ * failure for one profile is skipped rather than failing the batch.
+ */
+export async function getEmailsForProfileIds(profileIds: string[]): Promise<string[]> {
+  if (profileIds.length === 0) return [];
+  const admin = createAdminClient();
+  const results = await Promise.all(
+    Array.from(new Set(profileIds)).map(async (id) => {
+      try {
+        const { data, error } = await admin.auth.admin.getUserById(id);
+        if (error || !data?.user?.email) return null;
+        return data.user.email;
+      } catch {
+        return null;
+      }
+    })
+  );
+  return results.filter((email): email is string => Boolean(email));
+}

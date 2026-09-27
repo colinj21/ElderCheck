@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { inviteSchema } from "@/lib/validation";
 import { generateInvitationToken, hashInvitationToken } from "@/lib/invitations";
+import { sendEmail, invitationEmail } from "@/lib/email";
 
 export async function GET(request: Request) {
   const supabase = await createClient();
@@ -106,8 +107,23 @@ export async function POST(request: Request) {
 
   const inviteUrl = new URL(`/invitations/accept/${token}`, request.url).toString();
 
+  const [{ data: inviterProfile }, { data: household }] = await Promise.all([
+    admin.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
+    admin.from("households").select("name").eq("id", householdId).maybeSingle(),
+  ]);
+
+  const { subject, html, text } = invitationEmail({
+    inviterName: inviterProfile?.full_name || "A family admin",
+    householdLabel: household?.name || "their family",
+    role,
+    inviteUrl,
+    expiresAt: invitation.expires_at,
+  });
+  const emailResult = await sendEmail({ to: email, subject, html, text });
+
   return NextResponse.json({
     inviteUrl,
     expiresAt: invitation.expires_at,
+    emailSent: emailResult.sent,
   });
 }

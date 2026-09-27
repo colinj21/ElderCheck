@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateInvitationToken, hashInvitationToken } from "@/lib/invitations";
+import { sendEmail, invitationEmail } from "@/lib/email";
 import { z } from "zod";
 
 const schema = z.object({ invitationId: z.string().uuid() });
@@ -24,7 +25,7 @@ export async function POST(request: Request) {
 
   const { data: invitation } = await admin
     .from("caregiver_invitations")
-    .select("id, household_id, status")
+    .select("id, household_id, status, email, invited_role")
     .eq("id", parsed.data.invitationId)
     .maybeSingle();
 
@@ -65,5 +66,19 @@ export async function POST(request: Request) {
 
   const inviteUrl = new URL(`/invitations/accept/${token}`, request.url).toString();
 
-  return NextResponse.json({ inviteUrl, expiresAt: newExpiry });
+  const [{ data: inviterProfile }, { data: household }] = await Promise.all([
+    admin.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
+    admin.from("households").select("name").eq("id", invitation.household_id).maybeSingle(),
+  ]);
+
+  const { subject, html, text } = invitationEmail({
+    inviterName: inviterProfile?.full_name || "A family admin",
+    householdLabel: household?.name || "their family",
+    role: invitation.invited_role,
+    inviteUrl,
+    expiresAt: newExpiry,
+  });
+  const emailResult = await sendEmail({ to: invitation.email, subject, html, text });
+
+  return NextResponse.json({ inviteUrl, expiresAt: newExpiry, emailSent: emailResult.sent });
 }
