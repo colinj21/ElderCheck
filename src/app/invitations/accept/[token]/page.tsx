@@ -54,10 +54,7 @@ export default function AcceptInvitationPage({ params }: { params: Promise<{ tok
       return;
     }
     setAccepted(true);
-    setTimeout(() => {
-      router.push("/dashboard");
-      router.refresh();
-    }, 1000);
+    router.refresh();
   }
 
   async function onSignup(e: React.FormEvent) {
@@ -131,7 +128,28 @@ export default function AcceptInvitationPage({ params }: { params: Promise<{ tok
   }
 
   if (accepted) {
-    return <Centered>You're in! Taking you to your dashboard…</Centered>;
+    return (
+      <div className="mx-auto max-w-sm px-6 py-14 text-center">
+        <h1 className="font-display text-2xl text-ink">You&apos;re in!</h1>
+        <p className="mt-3 text-[15px] text-ink-soft">
+          You won&apos;t need to log in again on this phone — ElderCheck will keep you signed in
+          here.
+        </p>
+        <div className="mt-6 rounded-2xl bg-moss-light p-5 text-left">
+          <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-moss-dark">
+            Tip
+          </p>
+          <p className="mt-1 text-[14px] leading-relaxed text-ink">
+            Add ElderCheck to your home screen so it opens like an app. In your browser menu, tap{" "}
+            <strong>&quot;Add to Home Screen&quot;</strong> (iPhone: the Share icon, then &quot;Add
+            to Home Screen&quot;. Android: the ⋮ menu, then &quot;Add to Home screen&quot;).
+          </p>
+        </div>
+        <Button className="mt-6 w-full" onClick={() => router.push("/dashboard")}>
+          Go to dashboard
+        </Button>
+      </div>
+    );
   }
 
   return (
