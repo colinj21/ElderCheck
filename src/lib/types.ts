@@ -130,6 +130,18 @@ export interface CareNote {
   created_at: string;
 }
 
+export interface CaregiverHours {
+  id: string;
+  household_id: string;
+  care_recipient_id: string;
+  caregiver_id: string;
+  work_date: string;
+  hours: number;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Alert {
   id: string;
   household_id: string;

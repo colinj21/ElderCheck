@@ -78,6 +78,20 @@ export const checkinSubmitSchema = z.object({
     .max(50),
 });
 
+export const hoursLogSchema = z.object({
+  careRecipientId: z.string().uuid(),
+  workDate: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Pick a date"),
+  hours: z.coerce.number().positive("Enter hours greater than 0").max(24, "Can't exceed 24 hours"),
+  notes: z.string().trim().max(500).optional().or(z.literal("")),
+});
+
+export const hoursDeleteSchema = z.object({
+  id: z.string().uuid(),
+});
+
 export const careNoteSchema = z.object({
   careRecipientId: z.string().uuid(),
   body: z.string().trim().min(1, "Write a note").max(4000),

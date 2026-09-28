@@ -17,10 +17,14 @@ export function AppNav({
   const router = useRouter();
 
   const links = isCaregiver
-    ? [{ href: "/dashboard", label: "Your check-ins" }]
+    ? [
+        { href: "/dashboard", label: "Your check-ins" },
+        { href: "/hours", label: "Hours" },
+      ]
     : [
         { href: "/dashboard", label: "Dashboard" },
         { href: "/history", label: "History" },
+        { href: "/hours", label: "Hours" },
         ...(isAdmin ? [{ href: "/invite", label: "Invite" }] : []),
         { href: "/settings", label: "Settings" },
       ];
