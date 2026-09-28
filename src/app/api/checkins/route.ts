@@ -9,6 +9,7 @@ import {
   filterProfileIdsByPreference,
 } from "@/lib/notify";
 import { sendEmail, concernAlertEmail, checkinCompletedEmail } from "@/lib/email";
+import { sendPushToProfiles } from "@/lib/push";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -150,6 +151,16 @@ export async function POST(request: Request) {
       });
       await Promise.all(memberEmails.map((to) => sendEmail({ to, subject, html, text })));
     }
+
+    const pushIds = await filterProfileIdsByPreference(memberIds, "push_on_concern");
+    await sendPushToProfiles(pushIds, {
+      title:
+        status === "urgent"
+          ? `Urgent: concern flagged for ${recipientName}`
+          : `Something flagged for ${recipientName}`,
+      body: notes?.trim() || `${caregiverName} flagged today's check-in.`,
+      url: "/dashboard",
+    });
   } else {
     const inAppIds = await filterProfileIdsByPreference(memberIds, "in_app_on_checkin");
     await notify({

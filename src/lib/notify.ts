@@ -81,7 +81,9 @@ type PreferenceColumn =
   | "email_on_missed_checkin"
   | "in_app_on_checkin"
   | "in_app_on_concern"
-  | "in_app_on_missed_checkin";
+  | "in_app_on_missed_checkin"
+  | "push_on_concern"
+  | "push_on_missed_checkin";
 
 /**
  * Narrows a list of profile ids down to the ones who haven't opted out of

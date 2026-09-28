@@ -143,9 +143,19 @@ export function HoursView({
       )}
 
       <section>
-        <h2 className="font-display text-lg text-ink">
-          {loggableRecipients.length > 0 ? "All logged hours" : "Logged hours"}
-        </h2>
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="font-display text-lg text-ink">
+            {loggableRecipients.length > 0 ? "All logged hours" : "Logged hours"}
+          </h2>
+          {entries.length > 0 && (
+            <a
+              href="/api/hours/export"
+              className="text-[13px] font-medium text-moss-dark underline underline-offset-2"
+            >
+              Export CSV
+            </a>
+          )}
+        </div>
         {entries.length === 0 ? (
           <div className="mt-3">
             <EmptyState title="No hours logged yet" body="Once a caregiver logs hours, they'll show up here." />

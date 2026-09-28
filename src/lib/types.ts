@@ -154,6 +154,17 @@ export interface Alert {
   created_at: string;
 }
 
+export interface CaregiverShift {
+  id: string;
+  household_id: string;
+  care_recipient_id: string;
+  caregiver_id: string;
+  shift_date: string;
+  notes: string | null;
+  created_by: string | null;
+  created_at: string;
+}
+
 export interface NotificationPreferences {
   profile_id: string;
   email_on_checkin: boolean;
@@ -162,6 +173,8 @@ export interface NotificationPreferences {
   in_app_on_checkin: boolean;
   in_app_on_concern: boolean;
   in_app_on_missed_checkin: boolean;
+  push_on_concern: boolean;
+  push_on_missed_checkin: boolean;
 }
 
 export interface Medication {

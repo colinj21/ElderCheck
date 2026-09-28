@@ -20,11 +20,13 @@ export function AppNav({
     ? [
         { href: "/dashboard", label: "Your check-ins" },
         { href: "/hours", label: "Hours" },
+        { href: "/schedule", label: "Schedule" },
       ]
     : [
         { href: "/dashboard", label: "Dashboard" },
         { href: "/history", label: "History" },
         { href: "/hours", label: "Hours" },
+        { href: "/schedule", label: "Schedule" },
         ...(isAdmin ? [{ href: "/invite", label: "Invite" }] : []),
         { href: "/settings", label: "Settings" },
       ];

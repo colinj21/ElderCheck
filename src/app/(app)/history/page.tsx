@@ -108,11 +108,19 @@ export default async function HistoryPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl text-ink">History</h1>
-        <p className="mt-1 text-[14px] text-ink-soft">
-          Every check-in, note, and concern from your caregivers, in one place.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl text-ink">History</h1>
+          <p className="mt-1 text-[14px] text-ink-soft">
+            Every check-in, note, and concern from your caregivers, in one place.
+          </p>
+        </div>
+        <a
+          href={`/history/print${recipientFilter ? `?recipient=${recipientFilter}` : ""}`}
+          className="flex-shrink-0 text-[13px] font-medium text-moss-dark underline underline-offset-2"
+        >
+          Printable report
+        </a>
       </div>
 
       <div className="space-y-2">

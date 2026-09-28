@@ -7,6 +7,7 @@ import { Banner, Button, Card, Field, Input } from "@/components/ui";
 import type { NotificationPreferences, Profile } from "@/lib/types";
 import { PLANS } from "@/lib/plans";
 import type { HouseholdSubscription } from "@/lib/billing";
+import { PushSection } from "./push-section";
 
 export function SettingsForm({
   profile,
@@ -28,6 +29,7 @@ export function SettingsForm({
         <BillingSection householdId={householdId} subscription={subscription} />
       )}
       <NotificationsSection preferences={preferences} />
+      <PushSection />
       <PasswordSection />
       <DangerSection isAdmin={isAdmin} />
     </div>
@@ -224,6 +226,8 @@ function NotificationsSection({ preferences }: { preferences: NotificationPrefer
         inAppOnCheckin: prefs.in_app_on_checkin,
         inAppOnConcern: prefs.in_app_on_concern,
         inAppOnMissedCheckin: prefs.in_app_on_missed_checkin,
+        pushOnConcern: prefs.push_on_concern,
+        pushOnMissedCheckin: prefs.push_on_missed_checkin,
       }),
     });
     setStatus(res.ok ? "saved" : "error");
@@ -234,6 +238,7 @@ function NotificationsSection({ preferences }: { preferences: NotificationPrefer
     label: string;
     inAppKey: keyof NotificationPreferences;
     emailKey: keyof NotificationPreferences;
+    pushKey?: keyof NotificationPreferences;
   }[] = [
     {
       label: "A check-in is submitted",
@@ -244,11 +249,13 @@ function NotificationsSection({ preferences }: { preferences: NotificationPrefer
       label: "A concern is flagged",
       inAppKey: "in_app_on_concern",
       emailKey: "email_on_concern",
+      pushKey: "push_on_concern",
     },
     {
       label: "A check-in is missed",
       inAppKey: "in_app_on_missed_checkin",
       emailKey: "email_on_missed_checkin",
+      pushKey: "push_on_missed_checkin",
     },
   ];
 
@@ -273,10 +280,20 @@ function NotificationsSection({ preferences }: { preferences: NotificationPrefer
                 checked={Boolean(prefs[cat.emailKey])}
                 onChange={(v) => setPrefs((p) => ({ ...p, [cat.emailKey]: v }))}
               />
+              {cat.pushKey && (
+                <MiniToggle
+                  label="Push"
+                  checked={Boolean(prefs[cat.pushKey])}
+                  onChange={(v) => setPrefs((p) => ({ ...p, [cat.pushKey!]: v }))}
+                />
+              )}
             </div>
           </div>
         ))}
       </div>
+      <p className="mt-3 text-[12px] text-ink-soft">
+        Push needs to be turned on for this device below before it can send anything.
+      </p>
       <Button className="mt-5" onClick={save} disabled={status === "saving"}>
         {status === "saving" ? "Saving…" : status === "saved" ? "Saved ✓" : "Save preferences"}
       </Button>

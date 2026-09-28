@@ -92,6 +92,28 @@ export const hoursDeleteSchema = z.object({
   id: z.string().uuid(),
 });
 
+export const shiftAssignSchema = z.object({
+  careRecipientId: z.string().uuid(),
+  shiftDate: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Pick a date"),
+  caregiverId: z.string().uuid().nullable(),
+  notes: z.string().trim().max(300).optional().or(z.literal("")),
+});
+
+export const pushSubscribeSchema = z.object({
+  endpoint: z.string().url(),
+  keys: z.object({
+    p256dh: z.string().min(1),
+    auth: z.string().min(1),
+  }),
+});
+
+export const pushUnsubscribeSchema = z.object({
+  endpoint: z.string().url(),
+});
+
 export const careNoteSchema = z.object({
   careRecipientId: z.string().uuid(),
   body: z.string().trim().min(1, "Write a note").max(4000),
@@ -104,6 +126,8 @@ export const notificationPreferencesSchema = z.object({
   inAppOnCheckin: z.boolean(),
   inAppOnConcern: z.boolean(),
   inAppOnMissedCheckin: z.boolean(),
+  pushOnConcern: z.boolean(),
+  pushOnMissedCheckin: z.boolean(),
 });
 
 export const profileUpdateSchema = z.object({

@@ -40,6 +40,8 @@ export default async function SettingsPage() {
               in_app_on_checkin: true,
               in_app_on_concern: true,
               in_app_on_missed_checkin: true,
+              push_on_concern: true,
+              push_on_missed_checkin: true,
             }
           }
           isAdmin={isAdmin}

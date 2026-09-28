@@ -7,6 +7,7 @@ import {
   filterProfileIdsByPreference,
 } from "@/lib/notify";
 import { sendEmail, missedCheckinEmail } from "@/lib/email";
+import { sendPushToProfiles } from "@/lib/push";
 
 // Runs once daily near the end of the day (see vercel.json) and flags any
 // care recipient who has at least one active caregiver but received no
@@ -98,6 +99,13 @@ export async function GET(request: Request) {
       const { subject, html, text } = missedCheckinEmail({ recipientName, dashboardUrl });
       await Promise.all(emails.map((to) => sendEmail({ to, subject, html, text })));
     }
+
+    const pushIds = await filterProfileIdsByPreference(memberIds, "push_on_missed_checkin");
+    await sendPushToProfiles(pushIds, {
+      title: `${recipientName} hasn't had a check-in today`,
+      body: "No caregiver has checked in yet today.",
+      url: "/dashboard",
+    });
 
     flaggedCount += 1;
   }
