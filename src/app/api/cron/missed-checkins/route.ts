@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { notify, getHouseholdMemberIds, getEmailsForProfileIds } from "@/lib/notify";
+import {
+  notify,
+  getHouseholdMemberIds,
+  getEmailsForProfileIds,
+  filterProfileIdsByPreference,
+} from "@/lib/notify";
 import { sendEmail, missedCheckinEmail } from "@/lib/email";
 
 // Runs once daily near the end of the day (see vercel.json) and flags any
@@ -76,8 +81,9 @@ export async function GET(request: Request) {
     const recipientName = recipient.preferred_name || recipient.full_name;
     const memberIds = await getHouseholdMemberIds(recipient.household_id);
 
+    const inAppIds = await filterProfileIdsByPreference(memberIds, "in_app_on_missed_checkin");
     await notify({
-      profileIds: memberIds,
+      profileIds: inAppIds,
       householdId: recipient.household_id,
       type: "missed_checkin",
       title: `${recipientName} hasn't had a check-in today`,
@@ -85,15 +91,8 @@ export async function GET(request: Request) {
       relatedId: recipient.id,
     });
 
-    const { data: prefs } = await admin
-      .from("notification_preferences")
-      .select("profile_id, email_on_missed_checkin")
-      .in("profile_id", memberIds);
-    const optedOut = new Set(
-      (prefs ?? []).filter((p) => p.email_on_missed_checkin === false).map((p) => p.profile_id as string)
-    );
-    const emailableIds = memberIds.filter((id) => !optedOut.has(id));
-    const emails = await getEmailsForProfileIds(emailableIds);
+    const emailIds = await filterProfileIdsByPreference(memberIds, "email_on_missed_checkin");
+    const emails = await getEmailsForProfileIds(emailIds);
     if (emails.length > 0) {
       const dashboardUrl = new URL("/dashboard", request.url).toString();
       const { subject, html, text } = missedCheckinEmail({ recipientName, dashboardUrl });

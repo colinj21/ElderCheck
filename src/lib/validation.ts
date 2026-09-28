@@ -87,6 +87,9 @@ export const notificationPreferencesSchema = z.object({
   emailOnCheckin: z.boolean(),
   emailOnConcern: z.boolean(),
   emailOnMissedCheckin: z.boolean(),
+  inAppOnCheckin: z.boolean(),
+  inAppOnConcern: z.boolean(),
+  inAppOnMissedCheckin: z.boolean(),
 });
 
 export const profileUpdateSchema = z.object({

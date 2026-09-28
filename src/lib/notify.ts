@@ -12,10 +12,10 @@ type NotifyInput = {
 };
 
 /**
- * Creates in-app notification rows for the given profiles. This is an
- * in-app record only -- it does not send an email, push, or SMS. Nothing
- * in the app should claim a person "was notified" beyond this, since no
- * external delivery channel is configured yet.
+ * Creates in-app notification rows for the given profiles (the bell icon
+ * / notifications page). Doesn't send email -- callers that also want to
+ * email should filter recipients through filterProfileIdsByPreference()
+ * for the matching email_on_* column and call sendEmail() separately.
  */
 export async function notify({
   profileIds,
@@ -73,4 +73,37 @@ export async function getEmailsForProfileIds(profileIds: string[]): Promise<stri
     })
   );
   return results.filter((email): email is string => Boolean(email));
+}
+
+type PreferenceColumn =
+  | "email_on_checkin"
+  | "email_on_concern"
+  | "email_on_missed_checkin"
+  | "in_app_on_checkin"
+  | "in_app_on_concern"
+  | "in_app_on_missed_checkin";
+
+/**
+ * Narrows a list of profile ids down to the ones who haven't opted out of
+ * a given notification preference column. A profile with no preferences
+ * row yet is treated as opted in (matches the column defaults) -- only an
+ * explicit `false` removes someone from the list.
+ */
+export async function filterProfileIdsByPreference(
+  profileIds: string[],
+  column: PreferenceColumn
+): Promise<string[]> {
+  if (profileIds.length === 0) return [];
+  const admin = createAdminClient();
+  const uniqueIds = Array.from(new Set(profileIds));
+  const { data: prefs } = await admin
+    .from("notification_preferences")
+    .select(`profile_id, ${column}`)
+    .in("profile_id", uniqueIds);
+  const optedOut = new Set(
+    (prefs ?? [])
+      .filter((p) => (p as Record<string, unknown>)[column] === false)
+      .map((p) => p.profile_id as string)
+  );
+  return uniqueIds.filter((id) => !optedOut.has(id));
 }

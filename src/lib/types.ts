@@ -147,6 +147,9 @@ export interface NotificationPreferences {
   email_on_checkin: boolean;
   email_on_concern: boolean;
   email_on_missed_checkin: boolean;
+  in_app_on_checkin: boolean;
+  in_app_on_concern: boolean;
+  in_app_on_missed_checkin: boolean;
 }
 
 export interface Medication {

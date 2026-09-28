@@ -221,53 +221,88 @@ function NotificationsSection({ preferences }: { preferences: NotificationPrefer
         emailOnCheckin: prefs.email_on_checkin,
         emailOnConcern: prefs.email_on_concern,
         emailOnMissedCheckin: prefs.email_on_missed_checkin,
+        inAppOnCheckin: prefs.in_app_on_checkin,
+        inAppOnConcern: prefs.in_app_on_concern,
+        inAppOnMissedCheckin: prefs.in_app_on_missed_checkin,
       }),
     });
     setStatus(res.ok ? "saved" : "error");
     if (res.ok) setTimeout(() => setStatus("idle"), 1500);
   }
 
+  const categories: {
+    label: string;
+    inAppKey: keyof NotificationPreferences;
+    emailKey: keyof NotificationPreferences;
+  }[] = [
+    {
+      label: "A check-in is submitted",
+      inAppKey: "in_app_on_checkin",
+      emailKey: "email_on_checkin",
+    },
+    {
+      label: "A concern is flagged",
+      inAppKey: "in_app_on_concern",
+      emailKey: "email_on_concern",
+    },
+    {
+      label: "A check-in is missed",
+      inAppKey: "in_app_on_missed_checkin",
+      emailKey: "email_on_missed_checkin",
+    },
+  ];
+
   return (
     <Card>
       <h2 className="font-display text-lg text-ink">Notifications</h2>
       <p className="mt-1 text-[13px] text-ink-soft">
-        Email delivery requires an email provider to be connected (see project README).
-        These preferences are saved now so they take effect the moment it is.
+        Choose how you want to hear about each thing — in the app, by email, both, or neither.
       </p>
-      <div className="mt-4 space-y-3">
-        <Toggle
-          label="Email me when a check-in is submitted"
-          checked={prefs.email_on_checkin}
-          onChange={(v) => setPrefs((p) => ({ ...p, email_on_checkin: v }))}
-        />
-        <Toggle
-          label="Email me when a concern is flagged"
-          checked={prefs.email_on_concern}
-          onChange={(v) => setPrefs((p) => ({ ...p, email_on_concern: v }))}
-        />
-        <Toggle
-          label="Email me if a check-in is missed"
-          checked={prefs.email_on_missed_checkin}
-          onChange={(v) => setPrefs((p) => ({ ...p, email_on_missed_checkin: v }))}
-        />
+      <div className="mt-4 space-y-5">
+        {categories.map((cat) => (
+          <div key={cat.label}>
+            <p className="text-[14px] font-medium text-ink">{cat.label}</p>
+            <div className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
+              <MiniToggle
+                label="In app"
+                checked={Boolean(prefs[cat.inAppKey])}
+                onChange={(v) => setPrefs((p) => ({ ...p, [cat.inAppKey]: v }))}
+              />
+              <MiniToggle
+                label="Email"
+                checked={Boolean(prefs[cat.emailKey])}
+                onChange={(v) => setPrefs((p) => ({ ...p, [cat.emailKey]: v }))}
+              />
+            </div>
+          </div>
+        ))}
       </div>
-      <Button className="mt-4" onClick={save} disabled={status === "saving"}>
+      <Button className="mt-5" onClick={save} disabled={status === "saving"}>
         {status === "saving" ? "Saving…" : status === "saved" ? "Saved ✓" : "Save preferences"}
       </Button>
     </Card>
   );
 }
 
-function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
+function MiniToggle({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
   return (
-    <label className="flex items-center justify-between gap-4">
-      <span className="text-[14px] text-ink">{label}</span>
+    <label className="flex items-center gap-2">
       <button
         type="button"
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative h-6 w-11 rounded-full transition-colors ${checked ? "bg-moss" : "bg-line"}`}
+        className={`relative h-6 w-11 flex-shrink-0 rounded-full transition-colors ${
+          checked ? "bg-moss" : "bg-line"
+        }`}
       >
         <span
           className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
@@ -275,6 +310,7 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
           }`}
         />
       </button>
+      <span className="text-[13px] text-ink-soft">{label}</span>
     </label>
   );
 }

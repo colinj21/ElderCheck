@@ -2,8 +2,13 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkinSubmitSchema } from "@/lib/validation";
-import { notify, getHouseholdMemberIds, getEmailsForProfileIds } from "@/lib/notify";
-import { sendEmail, concernAlertEmail } from "@/lib/email";
+import {
+  notify,
+  getHouseholdMemberIds,
+  getEmailsForProfileIds,
+  filterProfileIdsByPreference,
+} from "@/lib/notify";
+import { sendEmail, concernAlertEmail, checkinCompletedEmail } from "@/lib/email";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -114,8 +119,9 @@ export async function POST(request: Request) {
       created_by: user.id,
     });
 
+    const inAppIds = await filterProfileIdsByPreference(memberIds, "in_app_on_concern");
     await notify({
-      profileIds: memberIds,
+      profileIds: inAppIds,
       householdId: recipient.household_id,
       type: status === "urgent" ? "urgent_concern" : "attention_concern",
       title:
@@ -127,7 +133,8 @@ export async function POST(request: Request) {
       relatedId: checkin.id,
     });
 
-    const memberEmails = await getEmailsForProfileIds(memberIds);
+    const emailIds = await filterProfileIdsByPreference(memberIds, "email_on_concern");
+    const memberEmails = await getEmailsForProfileIds(emailIds);
     if (memberEmails.length > 0) {
       const dashboardUrl = new URL("/dashboard", request.url).toString();
       const { subject, html, text } = concernAlertEmail({
@@ -144,14 +151,27 @@ export async function POST(request: Request) {
       await Promise.all(memberEmails.map((to) => sendEmail({ to, subject, html, text })));
     }
   } else {
+    const inAppIds = await filterProfileIdsByPreference(memberIds, "in_app_on_checkin");
     await notify({
-      profileIds: memberIds,
+      profileIds: inAppIds,
       householdId: recipient.household_id,
       type: "checkin_completed",
       title: `${caregiverName} completed today's check-in for ${recipientName}`,
       relatedTable: "checkins",
       relatedId: checkin.id,
     });
+
+    const emailIds = await filterProfileIdsByPreference(memberIds, "email_on_checkin");
+    const memberEmails = await getEmailsForProfileIds(emailIds);
+    if (memberEmails.length > 0) {
+      const dashboardUrl = new URL("/dashboard", request.url).toString();
+      const { subject, html, text } = checkinCompletedEmail({
+        caregiverName,
+        recipientName,
+        dashboardUrl,
+      });
+      await Promise.all(memberEmails.map((to) => sendEmail({ to, subject, html, text })));
+    }
   }
 
   await admin.from("audit_events").insert({

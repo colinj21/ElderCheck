@@ -37,6 +37,9 @@ export default async function SettingsPage() {
               email_on_checkin: true,
               email_on_concern: true,
               email_on_missed_checkin: true,
+              in_app_on_checkin: true,
+              in_app_on_concern: true,
+              in_app_on_missed_checkin: true,
             }
           }
           isAdmin={isAdmin}

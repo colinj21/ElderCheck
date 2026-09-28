@@ -23,6 +23,9 @@ export async function POST(request: Request) {
     email_on_checkin: parsed.data.emailOnCheckin,
     email_on_concern: parsed.data.emailOnConcern,
     email_on_missed_checkin: parsed.data.emailOnMissedCheckin,
+    in_app_on_checkin: parsed.data.inAppOnCheckin,
+    in_app_on_concern: parsed.data.inAppOnConcern,
+    in_app_on_missed_checkin: parsed.data.inAppOnMissedCheckin,
     updated_at: new Date().toISOString(),
   });
 

@@ -121,6 +121,28 @@ export function invitationEmail({
   return { subject: `${inviterName} invited you to ElderCheck`, html, text };
 }
 
+export function checkinCompletedEmail({
+  caregiverName,
+  recipientName,
+  dashboardUrl,
+}: {
+  caregiverName: string;
+  recipientName: string;
+  dashboardUrl: string;
+}) {
+  const subject = `${caregiverName} completed today's check-in for ${recipientName}`;
+  const html = emailShell(
+    subject,
+    `<p style="margin:0 0 24px 0;">Everything looked normal -- no concerns were flagged.</p>
+     <p style="margin:0 0 24px 0;">
+       <a href="${dashboardUrl}" style="display:inline-block;background-color:#4a6741;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;">View in ElderCheck</a>
+     </p>
+     <p style="margin:0;color:#6b6658;font-size:13px;">You're receiving this because you have email alerts turned on for check-ins. You can change this in Settings.</p>`
+  );
+  const text = `${subject}\n\nEverything looked normal -- no concerns were flagged.\n\nView in ElderCheck: ${dashboardUrl}\n\nYou're receiving this because you have email alerts turned on for check-ins. You can change this in Settings.`;
+  return { subject, html, text };
+}
+
 export function missedCheckinEmail({
   recipientName,
   dashboardUrl,
